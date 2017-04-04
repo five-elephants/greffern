@@ -1,3 +1,3 @@
 #!/bin/sh
 
-/home/john/acquire.py
+/home/john/daq/acquire.py

@@ -4,6 +4,7 @@ RUN apk update && apk upgrade && apk add \
 	bash \
 	bc \
 	postgresql \
+	py-flask \
 	py-psycopg2 \
 	py-sqlalchemy \
 	python3 \
@@ -16,9 +17,10 @@ RUN adduser postgres wheel \
 COPY daq/temperature.sh \
 	sys/startup.sh \
 	/usr/local/bin/
-COPY daq/* /home/john/
+COPY daq /home/john/daq
+COPY ui/* /home/john/
 COPY daq/cron-acquire /etc/periodic/15min/
-RUN su -c "pg_ctl start -w -D /data/db -l /data/db/pg_ctl.logfile && psql -f /home/john/create.sql" - postgres
+RUN su -c "pg_ctl start -w -D /data/db -l /data/db/pg_ctl.logfile && psql -f /home/john/daq/create.sql" - postgres
 VOLUME /data
 CMD ["/usr/local/bin/startup.sh"]
 
