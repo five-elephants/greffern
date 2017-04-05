@@ -3,12 +3,19 @@ LABEL maintainer "simonf256@googlemail.com"
 RUN apk update && apk upgrade && apk add \
 	bash \
 	bc \
+	freetype-dev \
+	libpng-dev \
+	pkgconf \
 	postgresql \
 	py-flask \
+	py-pip \
 	py-psycopg2 \
+	py-setuptools \
+	py-numpy \
 	py-sqlalchemy \
-	python3 \
+	python2 \
 	&& rm -rf /var/cache/apk/*
+RUN pip install bokeh
 RUN adduser postgres wheel \
 	&& mkdir -p /data/db \
 	&& chown postgres:postgres /data/db \
@@ -18,7 +25,7 @@ COPY daq/temperature.sh \
 	sys/startup.sh \
 	/usr/local/bin/
 COPY daq /home/john/daq
-COPY ui/* /home/john/
+COPY ui /home/john/
 COPY daq/cron-acquire /etc/periodic/15min/
 RUN su -c "pg_ctl start -w -D /data/db -l /data/db/pg_ctl.logfile && psql -f /home/john/daq/create.sql" - postgres
 VOLUME /data
