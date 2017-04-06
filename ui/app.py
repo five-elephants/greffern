@@ -48,27 +48,32 @@ def index(start=None, end=None):
 
 @app.route('/temp-plot')
 def temp_plot():
-    rows = get_rows(None, None)
+    sensors_rows = db.con.execute(db.sensors.select())
 
-    if not rows is None:
-        xs = {}
-        ys = {}
-        for row in rows:
-            if row.sensor_id in xs:
-                xs[row.sensor_id].append(row.timestamp)
-            else:
-                xs[row.sensor_id] = [ row.timestamp ]
+    p = figure(
+        title='Temperaturverlauf letzte 7 Tage',
+        x_axis_label='Datum und Zeit',
+        x_axis_type='datetime',
+        y_axis_label='Temperatur [Celsius]'
+    )
 
-            if row.sensor_id in ys:
-                ys[row.sensor_id].append(row.temperature)
-            else:
-                ys[row.sensor_id] = [ row.temperature ]
+    colors = ['blue', 'red', 'green', 'orange']
+    for color,sensor_row in zip(colors, sensors_rows):
+        now = datetime.datetime.now()
+        last_week = now - datetime.timedelta(days=7)
 
-        p = figure(x_axis_type='datetime')
-        #p.line([0, 1, 2, 3], [1, 0, 1, 0])
-        for sens in xs.keys():
-            p.line(xs[sens], ys[sens])
-        html = file_html(p, CDN, "temperature plot")
-        return html
-    else:
-        return "No data found"
+        clause = db.temperatures.select().where(and_(
+            db.temperatures.c.timestamp >= last_week,
+            db.temperatures.c.timestamp < now,
+            db.temperatures.c.sensor_id == sensor_row.id
+        )).order_by(db.temperatures.c.timestamp)
+
+        data = db.con.execute(clause).fetchall()
+
+        xs = [ x.timestamp for x in data ]
+        ys = [ x.temperature for x in data ]
+
+        p.line(xs, ys, legend=sensor_row.uid, line_color=color)
+
+    html = file_html(p, CDN, "temperature plot")
+    return html

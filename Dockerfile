@@ -8,10 +8,10 @@ RUN apk update && apk upgrade && apk add \
 	pkgconf \
 	postgresql \
 	py-flask \
+	py-numpy \
 	py-pip \
 	py-psycopg2 \
 	py-setuptools \
-	py-numpy \
 	py-sqlalchemy \
 	python2 \
 	&& rm -rf /var/cache/apk/*
