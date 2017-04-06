@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import db
 import os
@@ -33,11 +33,24 @@ def read_sensors():
     return res
 
 def update_db(temps):
+    sensor_ids = {}
+    for sensor_uid in temps.keys():
+        clause = db.sensors.select()\
+            .where(db.sensors.c.uid == sensor_uid) 
+        row = db.con.execute(clause).first()
+        if not row is None:
+            sensor_ids[sensor_uid] = row['id']
+        else:
+            ins = db.sensors.insert()\
+                .values(uid=sensor_uid)
+            res = db.con.execute(ins)
+            sensor_ids[sensor_uid] = res.inserted_primary_key[0]
+
     now = datetime.datetime.now()
     inserts = [ {
             'timestamp': now,
-            'sensor_id': k,
-            'temperature': float(v)
+            'sensor_id': sensor_ids[k],
+            'temperature': float(v) / 1000.0
         } for k,v in temps.items() ]
 
     db.con.execute(db.temperatures.insert(), inserts)

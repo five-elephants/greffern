@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import Table,Column,Integer,String,DateTime,Float
+from sqlalchemy import Table,Column,Integer,String,DateTime,Float,ForeignKey
 
 def connect(user, password, db, host='localhost', port='5432'):
     url = 'postgresql://{}:{}@{}:{}/{}'
@@ -13,11 +13,16 @@ def connect(user, password, db, host='localhost', port='5432'):
 
 con, meta = connect('john', 'you!know%nothing', 'house')
 
+sensors = Table('sensors', meta,
+    Column('id', Integer, primary_key=True),
+    Column('name', String),
+    Column('uid', String, unique=True),
+    Column('location', String))
 
 temperatures = Table('temperatures', meta,
     Column('id', Integer, primary_key=True),
     Column('timestamp', DateTime),
-    Column('sensor_id', String),
+    Column('sensor_id', ForeignKey('sensors.id')),
     Column('temperature', Float))
 
 meta.create_all()
