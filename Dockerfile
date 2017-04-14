@@ -30,4 +30,5 @@ COPY daq/cron-acquire /etc/periodic/15min/
 RUN su -c "pg_ctl start -w -D /data/db -l /data/db/pg_ctl.logfile && psql -f /home/john/daq/create.sql" - postgres
 VOLUME /data
 CMD ["/usr/local/bin/startup.sh"]
+EXPOSE 5000
 
