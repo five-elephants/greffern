@@ -1,13 +1,56 @@
-from flask import Flask,render_template
+import flask as fl
+import flask_login as fll
+from flask_wtf.csrf import CSRFProtect
 import daq.db as db
 import daq.acquire as acq
+import user
+import forms
 import datetime
 from sqlalchemy import and_,or_,not_
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 
-app = Flask(__name__)
+login_manager = fll.LoginManager()
+login_manager.login_view = 'login'
+csrf = CSRFProtect()
+
+app = fl.Flask(__name__)
+app.secret_key = '1d7d09213ee674042bb70ea5a8020cf62bddc869'
+
+login_manager.init_app(app)
+csrf.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id == 'default':
+        return user.DefaultUser()
+    else:
+        return None
+    
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    form = forms.LoginForm()
+    if form.validate_on_submit():
+        if form.username.data == 'default' and form.password.data == 'd.32.olli':
+            u = user.DefaultUser()
+            fll.login_user(u)
+
+            fl.flash('Eingeloggt')
+
+            next = fl.request.args.get('next')
+            return fl.redirect(next or fl.url_for('index'))
+        else:
+            #return '{} {}'.format(form.username.data, form.password.data)
+            return fl.abort(400)
+    return fl.render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout():
+    fll.logout_user()
+    return fl.redirect(fl.url_for('index'))
+
 
 def get_rows(start, end):
     if not start is None and not end is None:
@@ -33,9 +76,10 @@ def generate_table(start, end):
     rows = get_rows(start, end)
     if rows is None:
         rows = []
-    return render_template('temp_table.html', rows=rows)
+    return fl.render_template('temp_table.html', rows=rows)
 
 @app.route('/acquire')
+@fll.login_required
 def acquire():
     temps = acq.read_sensors()
     acq.update_db(temps)
@@ -43,10 +87,12 @@ def acquire():
 
 @app.route('/table')
 @app.route('/table/<string:start>/<string:end>')
+@fll.login_required
 def index(start=None, end=None):
     return generate_table(start, end)
 
 @app.route('/temp-plot')
+@fll.login_required
 def temp_plot():
     sensors_rows = db.con.execute(db.sensors.select())
 

@@ -15,7 +15,10 @@ RUN apk update && apk upgrade && apk add \
 	py-sqlalchemy \
 	python2 \
 	&& rm -rf /var/cache/apk/*
-RUN pip install bokeh
+RUN pip install \
+	bokeh \
+	flask-login \
+	flask-wtf
 RUN adduser postgres wheel \
 	&& mkdir -p /data/db \
 	&& chown postgres:postgres /data/db \
