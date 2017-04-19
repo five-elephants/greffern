@@ -10,13 +10,17 @@ from sqlalchemy import and_,or_,not_
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.embed import file_html
+import yaml
+
+with open('/home/john/config.yml', 'r') as f:
+    config = yaml.load(f)
 
 login_manager = fll.LoginManager()
 login_manager.login_view = 'login'
 csrf = CSRFProtect()
 
 app = fl.Flask(__name__)
-app.secret_key = '1d7d09213ee674042bb70ea5a8020cf62bddc869'
+app.secret_key = config['secret_key']
 
 login_manager.init_app(app)
 csrf.init_app(app)
@@ -24,8 +28,9 @@ csrf.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    if user_id == 'default':
-        return user.DefaultUser()
+    defuser = user.DefaultUser()
+    if user_id == defuser.get_id():
+        return defuser 
     else:
         return None
     
@@ -33,7 +38,7 @@ def load_user(user_id):
 def login():
     form = forms.LoginForm()
     if form.validate_on_submit():
-        if form.username.data == 'default' and form.password.data == 'd.32.olli':
+        if form.username.data == config['default_user']['name'] and form.password.data == config['default_user']['password']:
             u = user.DefaultUser()
             fll.login_user(u)
 

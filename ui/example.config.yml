@@ -1,0 +1,4 @@
+secret_key: secret
+default_user:
+    name: default
+    password: 123456 
