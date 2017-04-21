@@ -57,6 +57,11 @@ def logout():
     return fl.redirect(fl.url_for('index'))
 
 
+@app.route('/')
+def dashboard():
+    return fl.render_template('index.html')
+    
+
 def get_rows(start, end):
     if not start is None and not end is None:
         try:
