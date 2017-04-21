@@ -5,7 +5,9 @@ all: image
 image:
 	docker build -t greffern-remote .
 
-run:
+run: nginx-proxy letsencrypt dev
+
+prod:
 	docker run \
 		--name=greffern-remote-prod \
 		-v greffern-data:/data \
@@ -16,6 +18,9 @@ dev:
 	docker run \
 		--name=greffern-remote-dev \
 		-v greffern-data-dev:/data \
+		--device=/dev/vchiq:/dev/vchiq \
+		--device=/dev/vcio:/dev/vcio \
+		--device=/dev/vcsm:/dev/vcsm \
 		--env="FLASK_DEBUG=1" \
 		--env="VIRTUAL_HOST=mrcluster.duckdns.org" \
 		--env="LETSENCRYPT_HOST=mrcluster.duckdns.org" \
