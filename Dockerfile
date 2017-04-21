@@ -14,13 +14,11 @@ RUN apk update && apk upgrade && apk add \
 	py-setuptools \
 	py-sqlalchemy \
 	python2 \
-	raspberrypi \
 	&& rm -rf /var/cache/apk/*
 RUN pip install \
 	bokeh \
 	flask-login \
-	flask-wtf \
-	picamera
+	flask-wtf
 RUN adduser postgres wheel \
 	&& mkdir -p /data/db \
 	&& chown postgres:postgres /data/db \
@@ -36,6 +34,3 @@ RUN su -c "pg_ctl start -w -D /data/db -l /data/db/pg_ctl.logfile && psql -f /ho
 VOLUME /data
 CMD ["/usr/local/bin/startup.sh"]
 EXPOSE 5000
-ENV \
-	LD_LIBRARY_PATH="/opt/vc/lib:${LD_LIBRARY_PATH}" \
-	PATH="/opt/vc/bin:${PATH}"

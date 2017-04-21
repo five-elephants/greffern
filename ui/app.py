@@ -11,8 +11,6 @@ from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 import yaml
-import picamera
-import io
 
 with open('/home/john/config.yml', 'r') as f:
     config = yaml.load(f)
@@ -134,11 +132,5 @@ def temp_plot():
 @app.route('/picture')
 @fll.login_required
 def picture():
-   stream = io.BytesIO()
-   camera = picamera.PiCamera()
-   camera.start_preview()
-   sleep(2)
-   camera.capture(stream, 'jpeg') 
-
-   fl.send_file(stream, mimetype='image/jpeg')
+    return fl.abort(400)
 
