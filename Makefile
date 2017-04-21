@@ -18,6 +18,7 @@ dev:
 	docker run \
 		--name=greffern-remote-dev \
 		-v greffern-data-dev:/data \
+		-v /home/pi/webcam:/webcam:ro \
 		--env="FLASK_DEBUG=1" \
 		--env="VIRTUAL_HOST=mrcluster.duckdns.org" \
 		--env="LETSENCRYPT_HOST=mrcluster.duckdns.org" \

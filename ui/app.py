@@ -129,8 +129,8 @@ def temp_plot():
     html = file_html(p, CDN, "temperature plot")
     return html
 
-@app.route('/picture')
+@app.route('/webcam/<path:filename>')
 @fll.login_required
-def picture():
-    return fl.abort(400)
+def webcam(filename):
+    return fl.send_from_directory('/webcam', filename)
 
