@@ -40,4 +40,23 @@ Sensor.temperatures = relationship("Temperature",
         back_populates='sensor')
 
 
+class Alert(Base):
+    __tablename__ = 'alerts'
+
+    id = Column(Integer,
+                Sequence('alerts_id_seq'),
+                primary_key=True,
+                nullable=False)
+    name = Column(String, nullable=False)
+    sensor_id = Column(ForeignKey('sensors.id'), nullable=False)
+    below_trigger = Column(Float)
+    above_trigger = Column(Float)
+    notify_email = Column(String)
+
+    sensor = relationship('Sensor', back_populates='alerts')
+
+Sensor.alerts = relationship('Alert',
+    order_by=Alert.id,
+    back_populates='sensor')
+
 Base.metadata.create_all(engine)

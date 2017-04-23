@@ -113,12 +113,29 @@ def acquire():
 def index(start=None, end=None):
     return generate_table(start, end)
 
+@app.route('/temperatur', methods=['POST', 'GET'])
 @app.route('/temp-plot')
 @fll.login_required
 def temp_plot():
     session = db.Session()
-
     sensors = session.query(db.Sensor).all()
+
+    create_alert_form = forms.CreateAlertForm()
+    create_alert_form.sensor.choices = [ 
+        (s.id,s.uid if s.name is None else s.name) for s in sensors
+    ]
+    if create_alert_form.validate_on_submit():
+        alert = db.Alert(
+            name=create_alert_form.name.data,
+            sensor_id=create_alert_form.sensor.data,
+            notify_email=create_alert_form.notify_email.data,
+            above_trigger=create_alert_form.trigger_above.data,
+            below_trigger=create_alert_form.trigger_below.data
+        )
+
+        session.add(alert)
+        session.commit()
+
 
     p = figure(
         title='Temperaturverlauf letzte 7 Tage',
@@ -144,17 +161,14 @@ def temp_plot():
 
         p.line(xs, ys, legend=sensor.uid, line_color=color)
 
-    #html = file_html(p, CDN, "temperature plot")
     script, div = components(p)
+
     return fl.render_template('temperatur.html',
         script=script,
         div=div,
-        resources=CDN)
-
-@app.route('/temperatur')
-@fll.login_required
-def temperatur():
-    return fl.render_template('temperatur.html')
+        resources=CDN,
+        sensors=sensors,
+        create_alert_form=create_alert_form)
 
 @app.route('/webcam/<path:filename>')
 @fll.login_required
@@ -165,4 +179,5 @@ def webcam(filename):
 @fll.login_required
 def camera():
     return fl.render_template('camera.html')
+
 

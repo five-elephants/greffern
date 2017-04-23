@@ -26,4 +26,33 @@
     <h1>Temperatur</h1>
 
     {{ div|safe }}
+
+    <h2>Sensoren und Alarme</h2>
+
+    <div id='sensors'>
+        <ul>
+        {% for sensor in sensors %}
+            <li>
+                UID: {{ sensor.uid }}, Name: {{ sensor.name }}, Ort: {{ sensor.location }}
+                <ul>
+                    {% for alert in sensor.alerts %}
+                        <li>
+                            {{ alert.name }} =&gt; {{ alert.notify_email }}:
+                            {% if alert.above_trigger is not none %}
+                                &gt; {{ alert.above_trigger }} °C
+                            {% endif %}
+                            {% if alert.below_trigger is not none %}
+                                &lt; {{ alert.below_trigger }} °C
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <h2>Alarm erstellen</h2>
+    {{ wtf.quick_form(create_alert_form, method='POST', action='/temperatur') }}
+    
 {% endblock %}
