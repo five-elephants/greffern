@@ -1,7 +1,7 @@
 import flask as fl
 import flask_login as fll
 from flask_wtf.csrf import CSRFProtect
-import daq.db as db
+import daq.db_orm as db
 import daq.acquire as acq
 import user
 import forms
@@ -63,6 +63,9 @@ def dashboard():
     
 
 def get_rows(start, end):
+    session = db.Session()
+    q = session.query(db.Temperature)
+
     if not start is None and not end is None:
         try:
             fmt = '%Y-%m-%d-%H-%M'
@@ -71,16 +74,10 @@ def get_rows(start, end):
         except(ValueError):
             return "Error in time range"
 
-        clause = db.temperatures.select().where(and_(
-            db.temperatures.c.timestamp >= dt_start,
-            db.temperatures.c.timestamp < dt_end
-        )).order_by(db.temperatures.c.timestamp)
-    else:
-        clause = db.temperatures.select()\
-            .order_by(db.temperatures.c.timestamp)
+        q = q.filter(db.Temperature.timestamp >= dt_start,
+                     db.Temperature.timestamp < dt_end)
 
-    rows = db.con.execute(clause)
-    return rows
+    return q.order_by(db.Temperature.timestamp).all()
 
 def generate_table(start, end):
     rows = get_rows(start, end)
@@ -104,7 +101,9 @@ def index(start=None, end=None):
 @app.route('/temp-plot')
 @fll.login_required
 def temp_plot():
-    sensors_rows = db.con.execute(db.sensors.select())
+    session = db.Session()
+
+    sensors = session.query(db.Sensor).all()
 
     p = figure(
         title='Temperaturverlauf letzte 7 Tage',
@@ -114,22 +113,21 @@ def temp_plot():
     )
 
     colors = ['blue', 'red', 'green', 'orange']
-    for color,sensor_row in zip(colors, sensors_rows):
+    for color,sensor in zip(colors, sensors):
         now = datetime.datetime.now()
         last_week = now - datetime.timedelta(days=7)
 
-        clause = db.temperatures.select().where(and_(
-            db.temperatures.c.timestamp >= last_week,
-            db.temperatures.c.timestamp < now,
-            db.temperatures.c.sensor_id == sensor_row.id
-        )).order_by(db.temperatures.c.timestamp)
-
-        data = db.con.execute(clause).fetchall()
+        data = session.query(db.Temperature).\
+            filter(db.Temperature.timestamp >= last_week).\
+            filter(db.Temperature.timestamp < now).\
+            filter(db.Temperature.sensor == sensor).\
+            order_by(db.Temperature.timestamp).\
+            all()
 
         xs = [ x.timestamp for x in data ]
         ys = [ x.temperature for x in data ]
 
-        p.line(xs, ys, legend=sensor_row.uid, line_color=color)
+        p.line(xs, ys, legend=sensor.uid, line_color=color)
 
     html = file_html(p, CDN, "temperature plot")
     return html
