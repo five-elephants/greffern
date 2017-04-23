@@ -1,0 +1,15 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Greffern{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}"/>
+{% endblock %}
+
+{% block navbar %}
+    <div class="navbar navbar-fixed-top">
+        <a href='/temp-plot'>Temperaturverlauf</a>
+        <a href='/camera'>Bild</a>
+    </div>
+{% endblock %}
+

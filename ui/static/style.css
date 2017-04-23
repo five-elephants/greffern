@@ -1,0 +1,25 @@
+#overview-temp: {
+    align: center;
+}
+
+
+table.sensor-overview thead td: {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+table.sensor-overview td: {
+    padding: 2px;
+}
+
+td.sensor-overview-temp: {
+    text-align: center;
+}
+
+td.sensor-overview-datetime: {
+    text-align: left;
+}
+
+td.sensor-overview-name: {
+    text-align: left;
+}

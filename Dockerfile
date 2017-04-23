@@ -7,6 +7,7 @@ RUN apk update && apk upgrade && apk add \
 	libpng-dev \
 	pkgconf \
 	postgresql \
+	py-babel \
 	py-flask \
 	py-numpy \
 	py-pip \
@@ -17,6 +18,7 @@ RUN apk update && apk upgrade && apk add \
 	&& rm -rf /var/cache/apk/*
 RUN pip install \
 	bokeh \
+	flask-bootstrap \
 	flask-login \
 	flask-wtf
 RUN adduser postgres wheel \

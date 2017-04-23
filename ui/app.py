@@ -1,5 +1,6 @@
 import flask as fl
 import flask_login as fll
+import flask_bootstrap as flb
 from flask_wtf.csrf import CSRFProtect
 import daq.db_orm as db
 import daq.acquire as acq
@@ -9,8 +10,9 @@ import datetime
 from sqlalchemy import and_,or_,not_
 from bokeh.plotting import figure
 from bokeh.resources import CDN
-from bokeh.embed import file_html
+from bokeh.embed import file_html,components
 import yaml
+import babel
 
 with open('/home/john/config.yml', 'r') as f:
     config = yaml.load(f)
@@ -24,6 +26,7 @@ app.secret_key = config['secret_key']
 
 login_manager.init_app(app)
 csrf.init_app(app)
+flb.Bootstrap(app)
 
 
 @login_manager.user_loader
@@ -33,6 +36,16 @@ def load_user(user_id):
         return defuser 
     else:
         return None
+
+def datetimeformat(value, format='%Y-%m-%d %H:%M'):
+    return value.strftime(format)
+
+def timedeltaformat(value):
+    delta = value - datetime.datetime.now()
+    return babel.dates.format_timedelta(delta, add_direction=True, locale='de_DE')
+
+app.jinja_env.filters['datetimeformat'] = datetimeformat
+app.jinja_env.filters['timedeltaformat'] = timedeltaformat
     
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -59,7 +72,9 @@ def logout():
 
 @app.route('/')
 def dashboard():
-    return fl.render_template('index.html')
+    session = db.Session()
+    sensors = session.query(db.Sensor).all()
+    return fl.render_template('index.html', sensors=sensors)
     
 
 def get_rows(start, end):
@@ -129,11 +144,25 @@ def temp_plot():
 
         p.line(xs, ys, legend=sensor.uid, line_color=color)
 
-    html = file_html(p, CDN, "temperature plot")
-    return html
+    #html = file_html(p, CDN, "temperature plot")
+    script, div = components(p)
+    return fl.render_template('temperatur.html',
+        script=script,
+        div=div,
+        resources=CDN)
+
+@app.route('/temperatur')
+@fll.login_required
+def temperatur():
+    return fl.render_template('temperatur.html')
 
 @app.route('/webcam/<path:filename>')
 @fll.login_required
 def webcam(filename):
     return fl.send_from_directory('/webcam', filename)
+
+@app.route('/camera')
+@fll.login_required
+def camera():
+    return fl.render_template('camera.html')
 
