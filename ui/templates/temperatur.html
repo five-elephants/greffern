@@ -31,38 +31,60 @@
 </div>
 
 <div class="row">
-    <div class="col-xs-8">
+    <div class="col-xs-7">
         {{ div|safe }}
     </div>
 
-    <div class="col-xs-4">
-        <h2>Sensoren und Alarme</h2>
+    <div class="col-xs-5">
 
-        <div id='sensors'>
-            <ul>
-            {% for sensor in sensors %}
-                <li>
-                    UID: {{ sensor.uid }}, Name: {{ sensor.name }}, Ort: {{ sensor.location }}
-                    <ul>
-                        {% for alert in sensor.alerts %}
-                            <li>
-                                {{ alert.name }} =&gt; {{ alert.notify_email }}:
-                                {% if alert.above_trigger is not none %}
-                                    &gt; {{ alert.above_trigger }} °C
-                                {% endif %}
-                                {% if alert.below_trigger is not none %}
-                                    &lt; {{ alert.below_trigger }} °C
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-            </ul>
-        </div>
+<h2>Sensoren und Alarme</h2>
 
-        <h2>Alarm erstellen</h2>
-        {{ wtf.quick_form(create_alert_form, method='POST', action='/temperatur') }}
+<table class="table table-condensed table-striped">
+    <thead>
+        <tr>
+            <td> UID </td>
+            <td> Name </td>
+            <td> Ort </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sensor in sensors %}
+            <tr>
+                <td> {{ sensor.uid }} </td>
+                <td> {{ sensor.name }} </td>
+                <td> {{ sensor.location }} </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <dl>
+
+{% for alert in sensor.alerts %}
+    <dt>{{ alert.name }}</dt>
+    <dd>
+Sende Nachricht an <em>{{ alert.notify_email }}</em>,
+{% if alert.above_trigger is not none %}
+    wenn Temperatur <strong>über {{ alert.above_trigger }} °C</strong>
+    {% if alert.below_trigger is not none %}
+        oder
+    {% endif %}
+{% endif %}
+{% if alert.below_trigger is not none %}
+    wenn Temperatur <strong>unter {{ alert.below_trigger }} °C</strong>
+{% endif %}
+    </dd>
+{% endfor %}
+
+                    </dl>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<h2>Alarm erstellen</h2>
+{{ wtf.quick_form(create_alert_form, method='POST', action='/temperatur') }}
+
     </div>
 </div>
 </div>
