@@ -60,7 +60,7 @@
                     <dl>
 
 {% for alert in sensor.alerts %}
-    <dt>{{ alert.name }} (<a href="/temperatur?del_alert={{ alert.id }}">Löschen</a>)</dt>
+    <dt>{{ alert.name }} (<a href="/del_alert/{{ alert.id }}">Löschen</a>)</dt>
     <dd>
 Sende Nachricht an <em>{{ alert.notify_email }}</em>,
 {% if alert.above_trigger is not none %}
