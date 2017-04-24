@@ -133,16 +133,6 @@ def temp_plot():
     session = db.Session()
     sensors = session.query(db.Sensor).all()
 
-    #del_alert = fl.request.args.get('del_alert')
-    #if del_alert:
-    #    tgt = session.query(db.Alert).filter(db.Alert.id == del_alert).one()
-    #    session.delete(tgt)
-    #    session.commit()
-
-    #    fl.flash('Alarm {} gelöscht.'.format(tgt.name))
-    #    return fl.redirect('/temperatur')
-        
-
     create_alert_form = forms.CreateAlertForm()
     create_alert_form.sensor.choices = [ 
         (s.id,s.uid if s.name is None else s.name) for s in sensors
