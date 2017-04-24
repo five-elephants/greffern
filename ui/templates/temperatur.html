@@ -54,12 +54,13 @@
                 <td> {{ sensor.name }} </td>
                 <td> {{ sensor.location }} </td>
             </tr>
+            {% if sensor.alerts %}
             <tr>
                 <td colspan="3">
                     <dl>
 
 {% for alert in sensor.alerts %}
-    <dt>{{ alert.name }}</dt>
+    <dt>{{ alert.name }} (<a href="/temperatur?del_alert={{ alert.id }}">Löschen</a>)</dt>
     <dd>
 Sende Nachricht an <em>{{ alert.notify_email }}</em>,
 {% if alert.above_trigger is not none %}
@@ -77,6 +78,7 @@ Sende Nachricht an <em>{{ alert.notify_email }}</em>,
                     </dl>
                 </td>
             </tr>
+            {% endif %}
         {% endfor %}
     </tbody>
 </table>
