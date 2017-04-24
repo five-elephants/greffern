@@ -2,36 +2,44 @@
 {% block title %}{{ super() }} - Dashboard{% endblock %}
 
 {% block content %}
-    <h1>Übersicht</h1>
-    <div id="overview-temp">
-        <h2>Aktuelle Temperatur:</h2>
-        <table class="sensor-overview">
-            <thead>
-                <tr>
-                    <td class="sensor-overview-temp"> Temperatur </td>
-                    <td class="sensor-overview-datetime"> Datum und Uhrzeit </td>
-                    <td class="sensor-overview-name"> Name oder Sensor ID </td>
+<div class="container">
+<div class="row">
+    <div class="col-xs-12">
+
+<h1>Übersicht</h1>
+<div id="overview-temp">
+    <h2>Aktuelle Temperatur:</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <td class="sensor-overview-temp"> Temperatur </td>
+                <td class="sensor-overview-datetime"> Datum und Uhrzeit </td>
+                <td class="sensor-overview-name"> Name oder Sensor ID </td>
+            </td>
+        </thead>
+        <tbody>
+        {% for sensor in sensors %}
+            <tr>
+                <td class="sensor-overview-temp">
+                    {{ sensor.temperatures[-1].temperature|round(1) }} °C
                 </td>
-            </thead>
-            <tbody>
-            {% for sensor in sensors %}
-                <tr>
-                    <td class="sensor-overview-temp">
-                        {{ sensor.temperatures[-1].temperature|round(1) }} °C
-                    </td>
-                    <td class="sensor-overview-datetime">
-                        {{ sensor.temperatures[-1].timestamp|timedeltaformat }}
-                    </td>
-                    <td class="sensor-overview-name">
-                        {% if sensor.name is not none %}
-                            {{ sensor.name }}
-                        {% else %}
-                            {{ sensor.uid }}
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                <td class="sensor-overview-datetime">
+                    {{ sensor.temperatures[-1].timestamp|timedeltaformat }}
+                </td>
+                <td class="sensor-overview-name">
+                    {% if sensor.name is not none %}
+                        {{ sensor.name }}
+                    {% else %}
+                        {{ sensor.uid }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
     </div>
+</div>
+</div>
 {% endblock %}
