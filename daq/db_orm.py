@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import Sequence,Column,Integer,String,DateTime,Float,ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship,sessionmaker
+import datetime
 
 def connect(user, password, db, host='localhost', port='5432'):
     url = 'postgresql://{}:{}@{}:{}/{}'
@@ -35,6 +36,12 @@ class Temperature(Base):
 
     sensor = relationship('Sensor', back_populates='temperatures')
 
+    def __repr__(self):
+        return "<Temperature:{}, T={}, {}>".format(
+            self.timestamp,
+            self.temperature,
+            self.sensor.uid)
+
 Sensor.temperatures = relationship("Temperature",
         order_by=Temperature.timestamp,
         back_populates='sensor')
@@ -58,5 +65,29 @@ class Alert(Base):
 Sensor.alerts = relationship('Alert',
     order_by=Alert.id,
     back_populates='sensor')
+
+
+class Notification(Base):
+    __tablename__ = 'notifications'
+
+    id = Column(Integer,
+                Sequence('notifications_id_seq'),
+                primary_key=True,
+                nullable=False)
+    timestamp = Column(DateTime,
+                       nullable=False,
+                       default=datetime.datetime.now())
+    alert_id = Column(ForeignKey('alerts.id'), nullable=False)
+    temperature_id = Column(ForeignKey('temperatures.id'), nullable=False)
+
+    alert = relationship('Alert', back_populates='notifications')
+    temperature = relationship('Temperature', back_populates='notifications')
+
+Alert.notifications = relationship('Notification',
+    order_by=Notification.timestamp,
+    back_populates='alert')
+Temperature.notifications = relationship('Notification',
+    order_by=Notification.timestamp,
+    back_populates='temperature')
 
 Base.metadata.create_all(engine)

@@ -73,7 +73,8 @@ def logout():
 
 
 @app.route('/')
-def dashboard():
+@fll.login_required
+def index():
     session = db.Session()
     sensors = session.query(db.Sensor).all()
     return fl.render_template('index.html', sensors=sensors)
@@ -112,7 +113,7 @@ def acquire():
 @app.route('/table')
 @app.route('/table/<string:start>/<string:end>')
 @fll.login_required
-def index(start=None, end=None):
+def table(start=None, end=None):
     return generate_table(start, end)
 
 @app.route('/del_alert/<int:id>')
