@@ -10,11 +10,10 @@ import user
 import forms
 import datetime
 from sqlalchemy import and_,or_,not_
-from bokeh.plotting import figure
-from bokeh.resources import CDN
-from bokeh.embed import file_html,components
+import plots
 import yaml
 import babel
+from bokeh.resources import CDN
 
 with open('/home/john/config.yml', 'r') as f:
     config = yaml.load(f)
@@ -150,32 +149,19 @@ def temp_plot():
         session.add(alert)
         session.commit()
 
-
-    p = figure(
-        title='Temperaturverlauf letzte 7 Tage',
-        x_axis_label='Datum und Zeit',
-        x_axis_type='datetime',
-        y_axis_label='Temperatur [Celsius]'
-    )
-
-    colors = ['blue', 'red', 'green', 'orange']
-    for color,sensor in zip(colors, sensors):
-        now = datetime.datetime.now()
-        last_week = now - datetime.timedelta(days=7)
-
-        data = session.query(db.Temperature).\
+    now = datetime.datetime.now()
+    last_week = now - datetime.timedelta(days=7)
+    data = [
+        session.query(db.Temperature).\
             filter(db.Temperature.timestamp >= last_week).\
             filter(db.Temperature.timestamp < now).\
             filter(db.Temperature.sensor == sensor).\
-            order_by(db.Temperature.timestamp).\
-            all()
+            order_by(db.Temperature.timestamp)
+        for sensor in sensors
+    ]
+    labels = [ sensor.uid for sensor in sensors ]
 
-        xs = [ x.timestamp for x in data ]
-        ys = [ x.temperature for x in data ]
-
-        p.line(xs, ys, legend=sensor.uid, line_color=color)
-
-    script, div = components(p)
+    script, div = plots.temp_plot(labels, data)
 
     return fl.render_template('temperatur.html',
         script=script,
