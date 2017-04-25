@@ -36,7 +36,6 @@ Temperatur: {:.1f} °C
 Grenzwert:  {:.1f} °C
 
 Der Grenzwert {:.1f} °C für den Alarm {} wurde {}.
-Es folgen keine weiteren Benachrichtigungen.
         """.format(alert.name,
                    timestamp.strftime('%Y-%m-%d  %H:%M'),
                    temp,

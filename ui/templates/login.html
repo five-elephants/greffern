@@ -1,14 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <form method="POST" action="/login">
-        {{ form.csrf_token }}
-        {{ form.username.label }} {{ form.username(size=20) }}
-        {{ form.password.label }} {{ form.password(size=20) }}
-        <input type="submit" value="Login"/>
-    </form>
-</body>
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}{{ super() }} - Login{% endblock %}
 
+{% block content %}
+<div class="container">
+<div class="row">
+    <div class="col-xs-12">
+
+<form method="POST" action="/login" role="form">
+    {{ form.csrf_token }}
+    {{ wtf.form_field(form.username) }}
+    {{ wtf.form_field(form.password) }}
+    <input type="submit" value="Login"/>
+</form>
+
+    </div>
+</div>
+</div>
+
+{% endblock %}
