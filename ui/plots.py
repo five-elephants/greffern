@@ -7,9 +7,7 @@ from itertools import cycle,islice
 import math
 
 def temp_plot(labels, data):
-    #colors = ['blue', 'red', 'green', 'orange']
     colors = list(islice(cycle(palettes.Set1[9]), len(data)))
-    print colors
 
     p = figure(
         #title='Temperaturverlauf letzte 7 Tage',
