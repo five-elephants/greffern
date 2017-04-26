@@ -141,11 +141,23 @@ def delete_alert(id):
 @fll.login_required
 def temp_plot():
     session = db.Session()
-    sensors = session.query(db.Sensor).all()
+    sensors = session.query(db.Sensor).\
+        order_by(db.Sensor.id).\
+        all()
+
+    def make_label(s):
+        rv = ""
+        if s.name is None:
+            rv = s.uid
+        else:
+            rv = s.name
+            if not s.location is None:
+                rv += " " + s.location
+        return rv
 
     create_alert_form = forms.CreateAlertForm()
     create_alert_form.sensor.choices = [ 
-        (s.id,s.uid if s.name is None else s.name) for s in sensors
+        (s.id,make_label(s)) for s in sensors
     ]
     if create_alert_form.validate_on_submit():
         alert = db.Alert(
@@ -169,7 +181,7 @@ def temp_plot():
             order_by(db.Temperature.timestamp)
         for sensor in sensors
     ]
-    labels = [ sensor.uid for sensor in sensors ]
+    labels = [ sensor.uid if sensor.name is None else sensor.name for sensor in sensors ]
 
     script, div = plots.temp_plot(labels, data)
 
@@ -190,5 +202,34 @@ def webcam(filename):
 @nocache
 def camera():
     return fl.render_template('camera.html')
+
+
+@app.route('/setup', methods=['POST', 'GET'])
+@fll.login_required
+def setup():
+    session = db.Session()
+
+    form = forms.UpdateSensorForm()
+    if form.validate_on_submit():
+        sensor = session.query(db.Sensor).\
+            filter(db.Sensor.id == form.sensor_id.data).\
+            one()
+        sensor.name = form.name.data
+        sensor.location = form.location.data
+        session.commit()
+
+        return fl.redirect(fl.url_for('setup'))
+
+    sensors = session.query(db.Sensor).\
+        order_by(db.Sensor.id).\
+        all()
+    update_sensor_forms = [
+        forms.UpdateSensorForm(sensor_id=x.id,
+                               name=x.name,
+                               location=x.location)
+        for x in sensors
+    ]
+    return fl.render_template('setup.html',
+            data=zip(update_sensor_forms, sensors))
 
 

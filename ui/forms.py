@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,SelectField,FloatField,SubmitField
+from wtforms import StringField,SelectField,FloatField,SubmitField,HiddenField
 from wtforms.validators import DataRequired,Email
 
 
@@ -15,3 +15,10 @@ class CreateAlertForm(FlaskForm):
     trigger_above = FloatField('Obere Schranke')
     trigger_below = FloatField('Untere Schranke')
     submit = SubmitField('Erstellen')
+
+class UpdateSensorForm(FlaskForm):
+    sensor_id = HiddenField('id', validators=[DataRequired()])
+    name = StringField('Name')
+    location = StringField('Ort')
+    submit = SubmitField('Ok')
+
