@@ -14,6 +14,8 @@ import plots
 import yaml
 import babel
 from bokeh.resources import CDN
+from functools import update_wrapper
+
 
 with open('/home/john/config.yml', 'r') as f:
     config = yaml.load(f)
@@ -29,6 +31,14 @@ login_manager.init_app(app)
 csrf.init_app(app)
 flb.Bootstrap(app)
 
+
+def nocache(f):
+    """ Decorator to disable caching """
+    def new_func(*args, **kwargs):
+        resp = fl.make_response(f(*args, **kwargs))
+        resp.cache_control.no_cache = True
+        return resp
+    return update_wrapper(new_func, f)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -177,6 +187,7 @@ def webcam(filename):
 
 @app.route('/camera')
 @fll.login_required
+@nocache
 def camera():
     return fl.render_template('camera.html')
 
