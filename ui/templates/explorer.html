@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %} {{ super() }} - Analyse {% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    {% for css in resources.css_files %}
+        <link href="{{ css }}" rel="stylesheet">
+    {% endfor %}
+    {% for css_raw in resources.css_raw %}
+        <style>{{ css_raw }}</style>
+    {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+    {% for js in resources.js_files %}
+        <script src="{{ js }}"></script>
+    {% endfor %}
+    {% for js_raw in resources.js_raw %}
+        <script>{{ js_raw|safe }}</script>
+    {% endfor %}
+    {% for script in scripts %}
+        {{ script|safe }}
+    {% endfor %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="row">
+    <div class="col-xs-6">
+        <a href="/explorer/{{ prev['year'] }}/{{ prev['month'] }}">Vorheriger Montat</a>
+    </div>
+    <div class="col-xs-6 text-right">
+        <a href="/explorer/{{ next['year'] }}/{{ next['month'] }}">Nächster Montat</a>
+    </div>
+</div>
+<div class="row">
+    {% for div in divs %}
+    <div class="col-xs-12 col-md-6">
+        {{ div|safe }}
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

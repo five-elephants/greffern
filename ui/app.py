@@ -185,17 +185,47 @@ def temp_plot():
         create_alert_form=create_alert_form)
 
 @app.route('/explorer')
+@app.route('/explorer/<int:year>/<int:month>')
 @fll.login_required
-def explorer():
-    labels, data, date_range = etl.month_by_day()
+def explorer(year=None, month=None):
+    if year is None:
+        year = datetime.datetime.today().year
+    if month is None:
+        month = datetime.datetime.today().month
+
+    if month == 1:
+        prev = {
+            'year': year - 1,
+            'month': 12,
+        }
+    else:
+        prev = {
+            'year': year,
+            'month': month - 1,
+        }
+
+    if month == 12:
+        next = {
+            'year': year + 1,
+            'month': 1,
+        }
+    else:
+        next = {
+            'year': year,
+            'month': month + 1,
+        }
+
+    labels, data, date_range = etl.month_by_day(year, month)
     week_script, week_div = components(plots.month_by_day(labels, data, date_range))
 
-    labels, data, date_range = etl.year_by_month()
+    labels, data, date_range = etl.year_by_month(year, month)
     year_script, year_div = components(plots.year_by_month(labels, data, date_range))
 
     return fl.render_template('explorer.html',
         scripts=[week_script, year_script],
         divs   =[week_div, year_div],
+        prev=prev,
+        next=next,
         resources=CDN)
 
 @app.route('/webcam/<path:filename>')

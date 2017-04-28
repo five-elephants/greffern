@@ -106,19 +106,22 @@ def month_by_day(labels, data, date_range):
                        p.line(xs, mins, line_color=color),
         ])
 
-        if min_temp is None:
-            min_temp = np.min(mins)
-        else:
-            min_temp = np.min(mins + [min_temp])
+        if mins:
+            if min_temp is None:
+                min_temp = np.min(mins)
+            else:
+                min_temp = np.min(mins + [min_temp])
 
-        if max_temp is None:
-            max_temp = np.max(maxs)
-        else:
-            max_temp = np.max(maxs + [max_temp])
+        if maxs:
+            if max_temp is None:
+                max_temp = np.max(maxs)
+            else:
+                max_temp = np.max(maxs + [max_temp])
 
     p.x_range = Range1d(date_range[0], date_range[1])
     p.xaxis.bounds = date_range
-    p.yaxis.bounds = (min_temp, max_temp)
+    if not min_temp is None and not max_temp is None:
+        p.yaxis.bounds = (min_temp, max_temp)
 
     legend = Legend(items=zip(labels,curves), location=(0,0))
     legend.label_text_font_size = '14pt'
@@ -166,19 +169,22 @@ def year_by_month(labels, data, date_range):
                        p.line(xs, mins, line_color=color),
         ])
 
-        if min_temp is None:
-            min_temp = np.min(mins)
-        else:
-            min_temp = np.min(mins + [min_temp])
+        if mins:
+            if min_temp is None:
+                min_temp = np.min(mins)
+            else:
+                min_temp = np.min(mins + [min_temp])
 
-        if max_temp is None:
-            max_temp = np.max(maxs)
-        else:
-            max_temp = np.max(maxs + [max_temp])
+        if maxs:
+            if max_temp is None:
+                max_temp = np.max(maxs)
+            else:
+                max_temp = np.max(maxs + [max_temp])
 
     p.x_range = Range1d(date_range[0], date_range[1])
     p.xaxis.bounds = date_range
-    p.yaxis.bounds = (min_temp, max_temp)
+    if not min_temp is None and not max_temp is None:
+        p.yaxis.bounds = (min_temp, max_temp)
 
     legend = Legend(items=zip(labels,curves), location=(0,0))
     legend.label_text_font_size = '14pt'

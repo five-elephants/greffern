@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %} {{ super() }} - Einstellungen {% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="row">
+    <div class='col-xs-12'>
+
+<h2>Sensoren</h2>
+
+<table class="table table-stripped table-hover">
+<thead>
+    <tr>
+        <td><strong>UID</strong></td>
+        <td><strong>Name und Ort</strong></td>
+    </tr>
+</thead>
+
+<tbody>
+{% for d in data %}
+    <tr>
+        <td> {{ d[1].uid }} </td>
+        <td>
+
+<form class="form-inline" method="POST" action="/setup" role="form">
+    {{ d[0].hidden_tag() }}
+    {{ wtf.form_errors(d[0], hiddens="only") }}
+
+    <div class="form-group">
+        {{ wtf.form_field(d[0].name) }}
+    </div>
+    <div class="form-group">
+        {{ wtf.form_field(d[0].location) }}
+    </div>
+    {{ wtf.form_field(d[0].submit) }}
+</form>
+
+        </td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+
+    </div>
+</div>
+</div>
+{% endblock %}
