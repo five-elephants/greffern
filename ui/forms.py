@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,SelectField,FloatField,SubmitField,HiddenField
+from wtforms import StringField,SelectField,FloatField,SubmitField,HiddenField,PasswordField
 from wtforms.validators import DataRequired,Email
 
 
 class LoginForm(FlaskForm):
     username = StringField('Benutzer', validators=[DataRequired()])
-    password = StringField('Passwort', validators=[DataRequired()])
+    password = PasswordField('Passwort', validators=[DataRequired()])
 
 
 class CreateAlertForm(FlaskForm):

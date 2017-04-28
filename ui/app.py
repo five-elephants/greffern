@@ -193,13 +193,13 @@ def temp_plot():
         create_alert_form=create_alert_form)
 
 @app.route('/webcam/<path:filename>')
+@nocache
 @fll.login_required
 def webcam(filename):
     return fl.send_from_directory('/webcam', filename)
 
 @app.route('/camera')
 @fll.login_required
-@nocache
 def camera():
     return fl.render_template('camera.html')
 
