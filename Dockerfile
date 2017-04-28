@@ -15,6 +15,7 @@ RUN apk update && apk upgrade && apk add \
 	py-setuptools \
 	py-sqlalchemy \
 	python2 \
+	py-tz \
 	tzdata \
 	&& rm -rf /var/cache/apk/*
 RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
