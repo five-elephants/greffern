@@ -10,10 +10,12 @@ import user
 import forms
 import datetime
 from sqlalchemy import and_,or_,not_
+import etl
 import plots
 import yaml
 import babel
 from bokeh.resources import CDN
+from bokeh.embed import components
 from functools import update_wrapper
 
 
@@ -145,19 +147,9 @@ def temp_plot():
         order_by(db.Sensor.id).\
         all()
 
-    def make_label(s):
-        rv = ""
-        if s.name is None:
-            rv = s.uid
-        else:
-            rv = s.name
-            if not s.location is None:
-                rv += " " + s.location
-        return rv
-
     create_alert_form = forms.CreateAlertForm()
     create_alert_form.sensor.choices = [ 
-        (s.id,make_label(s)) for s in sensors
+        (s.id,plots.make_label(s)) for s in sensors
     ]
     if create_alert_form.validate_on_submit():
         alert = db.Alert(
@@ -183,7 +175,7 @@ def temp_plot():
     ]
     labels = [ sensor.uid if sensor.name is None else sensor.name for sensor in sensors ]
 
-    script, div = plots.temp_plot(labels, data)
+    script, div = components(plots.temp_plot(labels, data))
 
     return fl.render_template('temperatur.html',
         script=script,
@@ -191,6 +183,20 @@ def temp_plot():
         resources=CDN,
         sensors=sensors,
         create_alert_form=create_alert_form)
+
+@app.route('/explorer')
+@fll.login_required
+def explorer():
+    labels, data, date_range = etl.month_by_day()
+    week_script, week_div = components(plots.month_by_day(labels, data, date_range))
+
+    labels, data, date_range = etl.year_by_month()
+    year_script, year_div = components(plots.year_by_month(labels, data, date_range))
+
+    return fl.render_template('explorer.html',
+        scripts=[week_script, year_script],
+        divs   =[week_div, year_div],
+        resources=CDN)
 
 @app.route('/webcam/<path:filename>')
 @nocache

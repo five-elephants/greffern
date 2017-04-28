@@ -9,7 +9,7 @@ def connect(user, password, db, host='localhost', port='5432'):
     url = 'postgresql://{}:{}@{}:{}/{}'
     url = url.format(user, password, host, port, db)
 
-    engine = sqlalchemy.create_engine(url, client_encoding='utf8', echo=False)
+    engine = sqlalchemy.create_engine(url, client_encoding='utf8', echo=True)
     return engine
 
 engine = connect('john', 'you!know%nothing', 'house')
