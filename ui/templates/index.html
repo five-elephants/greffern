@@ -7,6 +7,21 @@
     <div class="col-xs-12">
 
 <h1>Übersicht</h1>
+<p>
+Das Greffern System besteht aus einem <a href="https://www.raspberrypi.org/products/raspberry-pi-3-model-b/">Raspberry Pi 3 Model B</a> mit <a href="https://www.raspberrypi.org/products/camera-module-v2/">Kamera Modul V2</a> und beliebig vielen Temperatursensoren vom Typ <a href="https://datasheets.maximintegrated.com/en/ds/DS18S20.pdf">DS18S20</a>.
+Die Internetverbindung wird über einen UMTS-Stick vom Typ <a href="http://consumer.huawei.com/at/mobile-broadband/dongle/features/e3531-at.htm">Huawei E3531</a> hergestellt.
+Es erfüllt vier Aufgaben:
+</p>
+<ul>
+    <li>Aufzeichnen der Temperatur: Alle 15 min werden alle Temperatursensoren ausgelesen und die Ergebnisse in einer Datenbank mit Zeitstempel gespeichert.</li>
+    <li>Darstellung des Temperaturverlaufes: Die Webanwendung auf dem System stellt Plots der Messwerte via Internet zur Verfügung.</li>
+    <li>Alarme bei Über- oder Unterschreiten von Grenzwerten: Es lassen sich beliebig viele Alarme konfigurieren, die Benachrichtigungen per E-Mail versenden.</li>
+    <li>Jede Minute wird ein Bild von der Webcam aufgezeichnet und über die Web-Anwendung zur Verfügung gestellt.</li>
+</ul>
+<p>
+Diese Seite listet die aktuellen Temperaturen aller Sensoren.
+Weitere Funktionen sind über das Menü oben zugänglich.
+</p>
 <div id="overview-temp">
     <h2>Aktuelle Temperatur:</h2>
     <table class="table table-striped">

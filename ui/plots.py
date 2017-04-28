@@ -7,6 +7,19 @@ from itertools import cycle,islice
 import math
 import numpy as np
 from functools import update_wrapper
+import datetime
+
+class UTC(datetime.tzinfo):
+    def utcoffset(self, dt):
+        return datetime.timedelta(0)
+
+    def tzname(self, dt):
+        return "UTC"
+
+    def dst(self, dt):
+        return datetime.timedelta(0)
+
+utc = UTC()
 
 def make_label(s):
     rv = ""
@@ -52,11 +65,15 @@ def temp_plot(labels, data):
 
     curves = []
     for color,label,d in zip(colors, labels, data):
-        xs = [ x.timestamp for x in d ]
+        xs = [ x.timestamp.replace(tzinfo=utc) for x in d ]
         ys = [ x.temperature for x in d ]
 
         #p.line(xs, ys, legend=label, line_color=color)
         curves.append([p.line(xs, ys, line_color=color)])
+
+        print "tz: ", xs[0].tzname()
+        print "xs: ", xs
+        print "ys: ", ys
 
     legend = Legend(items=zip(labels,curves), location=(0,0))
     legend.label_text_font_size = '14pt'

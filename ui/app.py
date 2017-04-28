@@ -168,7 +168,6 @@ def temp_plot():
     data = [
         session.query(db.Temperature).\
             filter(db.Temperature.timestamp >= last_week).\
-            filter(db.Temperature.timestamp < now).\
             filter(db.Temperature.sensor == sensor).\
             order_by(db.Temperature.timestamp)
         for sensor in sensors
@@ -221,11 +220,25 @@ def explorer(year=None, month=None):
     labels, data, date_range = etl.year_by_month(year, month)
     year_script, year_div = components(plots.year_by_month(labels, data, date_range))
 
+    figures = [
+        {'div': week_div, 'text':
+        u"""
+<strong>Abbildung 1</strong>: Kreise markieren den Tagesdurchschnitt der Temperatur für den jeweiligen Sensor.
+Der schattierte Bereich markiert minimale und maximale Werte an diesem Tag. 
+        """},
+        {'div': year_div, 'text': 
+        u"""
+<strong>Abbildung 2</strong>: Kreise markieren Monatsdurchschnitte der Temperatur für den jeweiligen Sensor.
+Der schattierte Bereich markiert minimale und maximale Werte in diesem Monat.
+        """},
+    ]
+
     return fl.render_template('explorer.html',
         scripts=[week_script, year_script],
-        divs   =[week_div, year_div],
+        figures=figures,
         prev=prev,
         next=next,
+        cur=datetime.datetime(year=year, month=month, day=1).strftime('%B %Y'),
         resources=CDN)
 
 @app.route('/webcam/<path:filename>')
