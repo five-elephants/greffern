@@ -32,19 +32,40 @@
 
 <div class="row">
     <div class="col-xs-12 col-md-6">
-        {{ div|safe }}
+        <div class="row">
+            <div class="col-xs-12">
+                {{ div|safe }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12" style="padding-top: 40px;">
+                <p><strong>Abbildung 1</strong>: Die Kurven zeigen den Temperaturverlauf der letzten sieben Tage für alle Sensoren.</p>
+            </div>
+        </div>
     </div>
 
     <div class="col-xs-12 col-md-6">
 
 <h2>Sensoren und Alarme</h2>
+<p>
+Hier werden alle aktiven Sensoren und dazugehörige Alarme aufgelistet.
+Neue Alarme können über das Formular unten angelegt werden.
+</p>
+<p>
+Alarme werden einmal täglich kontrolliert.
+Für jeden Alarm gilt: Falls seit dem letzten Alarm die obere Schranke überschritten wird, wird eine E-Mail an die angegebene Adresse gesendet.
+Die E-Mail enthält Informationen über die gemessene Temperatur und den Zeitpunkt der Überschreitung.
+Gleiches gilt für die untere Schranke.
+Die Angabe beider Schranken ist optional.
+Falls keine Schranke gesetzt wird, wird auch kein Alarm ausgelöst.
+</p>
 
 <table class="table table-condensed table-striped">
     <thead>
         <tr>
-            <td> UID </td>
-            <td> Name </td>
-            <td> Ort </td>
+            <td><strong>UID</strong></td>
+            <td><strong>Name</strong></td>
+            <td><strong>Ort</strong></td>
         </tr>
     </thead>
     <tbody>
