@@ -2,14 +2,19 @@ NGINX_PROXY_CONTAINER="docker ps --filter='name=nginx-proxy' -q"
 
 all: image
 
+clean:
+	docker ps -q -a | xargs -r docker rm
+	docker images -q --filter="dangling=true" | xargs -r docker rmi
+
 image:
 	docker build -t greffern-remote .
 
 run: nginx-proxy letsencrypt dev
 
 stop:
-	docker stop greffern-remote nginx-proxy letsencrypt
-	docker rm nginx-proxy letsencrypt
+	docker ps -q --filter="name=nginx-proxy" | xargs -r docker stop
+	docker ps -q --filter="name=letsencrypt" | xargs -r docker stop
+	docker ps -q --filter="name=greffern-remote" | xargs -r docker stop
 
 prod:
 	docker run \
@@ -19,7 +24,7 @@ prod:
 		-d greffern-remote
 
 dev:
-	docker run \
+	docker run -d \
 		--name=greffern-remote-dev \
 		-v greffern-data-dev:/data \
 		-v /home/ubuntu/webcam:/webcam:ro \
@@ -27,7 +32,6 @@ dev:
 		--env="VIRTUAL_HOST=greffern.duckdns.org" \
 		--env="LETSENCRYPT_HOST=greffern.duckdns.org" \
 		--env="LETSENCRYPT_EMAIL=simonf256@googlemail.com" \
-		--rm=true \
 		greffern-remote
 
 sync-dev:
