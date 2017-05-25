@@ -1,4 +1,4 @@
-FROM armhf/alpine:3.5
+FROM alpine:3.5
 LABEL maintainer "simonf256@googlemail.com"
 RUN apk update && apk upgrade && apk add \
 	bash \
@@ -34,7 +34,6 @@ COPY daq/temperature.sh \
 	/usr/local/bin/
 COPY daq /home/john/daq
 COPY ui /home/john/
-COPY daq/cron-acquire /etc/periodic/15min/
 COPY daq/cron-alerts /etc/periodic/daily/
 RUN su -c "pg_ctl start -w -D /data/db -l /data/db/pg_ctl.logfile && psql -f /home/john/daq/create.sql" - postgres
 VOLUME /data
