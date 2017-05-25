@@ -7,6 +7,10 @@ image:
 
 run: nginx-proxy letsencrypt dev
 
+stop:
+	docker stop greffern-remote nginx-proxy letsencrypt
+	docker rm nginx-proxy letsencrypt
+
 prod:
 	docker run \
 		--name=greffern-remote-prod \
@@ -24,7 +28,7 @@ dev:
 		--env="LETSENCRYPT_HOST=greffern.duckdns.org" \
 		--env="LETSENCRYPT_EMAIL=simonf256@googlemail.com" \
 		--rm=true \
-		-ti greffern-remote
+		greffern-remote
 
 sync-dev:
 	find daq | xargs -I file docker cp file greffern-remote-dev:/home/john/daq/
