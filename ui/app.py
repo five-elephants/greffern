@@ -42,6 +42,18 @@ def nocache(f):
         return resp
     return update_wrapper(new_func, f)
 
+
+def valid_token(f):
+    """ Decorator to require valid token """
+    def new_func(*args, **kwargs):
+        token = fl.request.args.get('token')
+        if token in config['tokens']:
+            return f(*args, **kwargs)
+        else:
+            return fl.abort(403)
+    return update_wrapper(new_func, f) 
+
+
 @login_manager.user_loader
 def load_user(user_id):
     defuser = user.DefaultUser()
@@ -282,3 +294,28 @@ def setup():
             data=zip(update_sensor_forms, sensors))
 
 
+@app.route('/api/add-temperature')
+@valid_token
+def add_temperature():
+    session = db.Session()
+
+    timestamp = fl.request.args.get('timestamp')
+    uid = fl.request.args.get('uid')
+    value = fl.request.args.get('value')
+
+    if timestamp is None or uid is None or value is None:
+        return 'require timestamp, uid and value'
+
+    fmt = '%Y-%m-%d-%H-%M-%S'
+    sensor = session.query(db.Sensor).filter(db.Sensor.uid == uid).first()
+    if sensor is None:
+        sensor = db.Sensor(uid=uid)
+        session.add(sensor)
+
+    sensor.temperatures.append(db.Temperature(
+            timestamp=datetime.datetime.strptime(timestamp, fmt),
+            temperature=value))
+    session.commit()
+
+    return "OK"
+	
