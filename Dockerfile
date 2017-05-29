@@ -17,8 +17,10 @@ RUN apk update && apk upgrade && apk add \
 	python2 \
 	py-tz \
 	tzdata \
+    && cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime \
+    && echo "Europe/Berlin" > /etc/timezone \
+    && apk del tzdata \
 	&& rm -rf /var/cache/apk/*
-RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 RUN pip install \
 	bokeh \
 	flask-bootstrap \

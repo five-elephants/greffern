@@ -9,6 +9,7 @@ import daq.acquire as acq
 import user
 import forms
 import datetime
+from pytz import timezone
 from sqlalchemy import and_,or_,not_
 import etl
 import plots
@@ -66,8 +67,15 @@ def datetimeformat(value, format='%Y-%m-%d %H:%M'):
     return value.strftime(format)
 
 def timedeltaformat(value):
-    delta = value - datetime.datetime.now()
+    now = datetime.datetime.now(timezone('Europe/Berlin'))
+    value_tz = timezone('Europe/Berlin').localize(value)
+    delta = value_tz - now
     return babel.dates.format_timedelta(delta, add_direction=True, locale='de_DE')
+    #return '{} ({}) - {} ({})'.format(
+    #    value_tz,
+    #    value_tz.tzinfo,
+    #    now,
+    #    now.tzinfo)
 
 app.jinja_env.filters['datetimeformat'] = datetimeformat
 app.jinja_env.filters['timedeltaformat'] = timedeltaformat
