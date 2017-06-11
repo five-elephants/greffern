@@ -7,7 +7,7 @@ clean:
 	docker images -q --filter="dangling=true" | xargs -r docker rmi
 
 image:
-	docker build -t greffern-remote .
+	docker build --no-cache -t greffern-remote .
 
 run: nginx-proxy letsencrypt dev
 
