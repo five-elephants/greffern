@@ -14,7 +14,21 @@ token = config['api']['token']
 
 def pull_alerts():
     res = urllib2.urlopen('{}?token={}'.format(api_url, token)).read()
-    print(json.loads(res))
+    alerts = json.loads(res)
+
+    session = db.Session()
+
+    # clear old alerts
+    old_alerts = session.query(db.Alert).all()
+    session.delete(old_alerts)
+
+    # add new alerts
+    for alert in alerts:
+        row = db.Alert()
+        row.from_dict(alert)
+        session.add(row)
+
+    session.commit()
 
 
 if __name__ == '__main__':
