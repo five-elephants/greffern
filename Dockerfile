@@ -36,7 +36,6 @@ COPY daq/temperature.sh \
 	/usr/local/bin/
 COPY daq /home/john/daq
 COPY ui /home/john/
-COPY daq/cron-alerts /etc/periodic/daily/
 RUN su -c "pg_ctl start -w -D /data/db -l /data/db/pg_ctl.logfile && psql -f /home/john/daq/create.sql" - postgres
 VOLUME /data
 CMD ["/usr/local/bin/startup.sh"]

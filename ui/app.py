@@ -156,7 +156,7 @@ def delete_alert(id):
     session.delete(tgt)
     session.commit()
 
-    fl.flash('Alarm {} gelöscht.'.format(tgt.name))
+    fl.flash(u'Alarm {} gelöscht.'.format(tgt.name))
     return fl.redirect('/temperatur')
 
 @app.route('/temperatur', methods=['POST', 'GET'])
