@@ -8,7 +8,7 @@ import yaml
 with open('/home/john/config.yml', 'r') as f:
     config = yaml.load(f)
 
-api_url = config['api']['url']
+api_url = config['api']['url'] + '/add-temperature'
 token = config['api']['token']
 
 def publish(temps):
