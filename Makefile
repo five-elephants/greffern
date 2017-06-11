@@ -24,7 +24,7 @@ dev:
 		--env="LETSENCRYPT_HOST=mrcluster.duckdns.org" \
 		--env="LETSENCRYPT_EMAIL=simonf256@googlemail.com" \
 		--rm=true \
-		-ti greffern-remote
+		-ti greffern-remote /bin/bash
 
 sync-dev:
 	find daq | xargs -I file docker cp file greffern-remote-dev:/home/john/daq/

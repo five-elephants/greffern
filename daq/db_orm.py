@@ -60,7 +60,8 @@ class Alert(Base):
     above_trigger = Column(Float)
     notify_email = Column(String)
 
-    sensor = relationship('Sensor', back_populates='alerts')
+    sensor = relationship('Sensor',
+            back_populates='alerts')
 
     def as_dict(self):
         return { c.name : getattr(self, c.name) for c in self.__table__.columns }
@@ -68,6 +69,14 @@ class Alert(Base):
     def from_dict(self, dct):
         for k,v in dct.iteritems():
             setattr(self, k, v)
+
+    def __repr__(self):
+        return '<Alert:id={},sensor_id={},below={},above={},email={}>'.format(
+            self.id,
+            self.sensor_id,
+            self.below_trigger,
+            self.above_trigger,
+            self.notify_email)
 
 Sensor.alerts = relationship('Alert',
     order_by=Alert.id,
@@ -92,9 +101,11 @@ class Notification(Base):
 
 Alert.notifications = relationship('Notification',
     order_by=Notification.timestamp,
-    back_populates='alert')
+    back_populates='alert',
+    cascade='all, delete, delete-orphan')
 Temperature.notifications = relationship('Notification',
     order_by=Notification.timestamp,
-    back_populates='temperature')
+    back_populates='temperature',
+    cascade='all, delete, delete-orphan')
 
 Base.metadata.create_all(engine)

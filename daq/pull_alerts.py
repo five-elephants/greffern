@@ -15,18 +15,29 @@ token = config['api']['token']
 def pull_alerts():
     res = urllib2.urlopen('{}?token={}'.format(api_url, token)).read()
     alerts = json.loads(res)
+    print('new alerts: {}'.format(alerts))
 
     session = db.Session()
 
-    # clear old alerts
-    old_alerts = session.query(db.Alert).all()
-    session.delete(old_alerts)
-
-    # add new alerts
+    # update or add new alerts
     for alert in alerts:
-        row = db.Alert()
-        row.from_dict(alert)
-        session.add(row)
+        row = session.query(db.Alert).filter(db.Alert.id == alert['id']).one_or_none()
+        if not row is None:
+            row.from_dict(alert)
+        else:
+            row = db.Alert() 
+            row.from_dict(alert)
+            session.add(row)
+
+    # delete old ones
+    obsolete = session.query(db.Alert)\
+        .filter(~db.Alert.id.in_([ alert['id'] for alert in alerts ]))
+    for obs in obsolete:
+        session.delete(obs)
+
+    new_alerts = session.query(db.Alert)
+    for alert in new_alerts:
+        print(alert)
 
     session.commit()
 
