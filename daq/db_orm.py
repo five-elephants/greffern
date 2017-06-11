@@ -62,6 +62,9 @@ class Alert(Base):
 
     sensor = relationship('Sensor', back_populates='alerts')
 
+    def as_dict(self):
+        return { c.name : getattr(self, c.name) for c in self.__table__.columns }
+
 Sensor.alerts = relationship('Alert',
     order_by=Alert.id,
     back_populates='sensor')

@@ -14,6 +14,7 @@ from sqlalchemy import and_,or_,not_
 import etl
 import plots
 import yaml
+import json
 import babel
 from bokeh.resources import CDN
 from bokeh.embed import components
@@ -327,3 +328,11 @@ def add_temperature():
 
     return "OK"
 	
+
+@app.route('/api/list-alerts')
+@valid_token
+def list_alters():
+    session = db.Session()
+    alerts = session.query(db.Alert).all()
+    return json.dumps([ a.as_dict() for a in alerts ])
+
