@@ -3,7 +3,7 @@ NGINX_PROXY_CONTAINER="docker ps --filter='name=nginx-proxy' -q"
 all: image
 
 image:
-	docker build -t greffern-remote .
+	docker build --no-cache --pull -t greffern-remote .
 
 run: nginx-proxy letsencrypt dev
 

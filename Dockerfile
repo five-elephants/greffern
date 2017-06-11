@@ -3,6 +3,7 @@ LABEL maintainer "simonf256@googlemail.com"
 RUN apk update && apk upgrade && apk add \
 	bash \
 	bc \
+	ca-certificates \
 	freetype-dev \
 	libpng-dev \
 	pkgconf \
@@ -17,6 +18,7 @@ RUN apk update && apk upgrade && apk add \
 	python2 \
 	py-tz \
 	tzdata \
+	&& update-ca-certificates \
 	&& rm -rf /var/cache/apk/*
 RUN cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 RUN pip install \

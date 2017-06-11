@@ -1,3 +1,4 @@
 #!/bin/sh
 
 /home/john/daq/acquire.py
+/home/john/daq/acquire_and_publish.py
