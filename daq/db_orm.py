@@ -25,6 +25,10 @@ class Sensor(Base):
     uid = Column(String, unique=True)
     location = Column(String)
 
+    def as_dict(self):
+        rv = { c.name : getattr(self, c.name) for c in self.__table__.columns }
+        return rv
+
 
 class Temperature(Base):
     __tablename__ = 'temperatures'
@@ -41,6 +45,11 @@ class Temperature(Base):
             self.timestamp,
             self.temperature,
             self.sensor.uid)
+
+    def as_dict(self):
+        rv = { c.name : getattr(self, c.name) for c in self.__table__.columns }
+        rv['sensor'] = self.sensor.as_dict()
+        return rv
 
 Sensor.temperatures = relationship("Temperature",
         order_by=Temperature.timestamp,
@@ -63,7 +72,9 @@ class Alert(Base):
     sensor = relationship('Sensor', back_populates='alerts')
 
     def as_dict(self):
-        return { c.name : getattr(self, c.name) for c in self.__table__.columns }
+        rv = { c.name : getattr(self, c.name) for c in self.__table__.columns }
+        rv['sensor'] = self.sensor.as_dict()
+        return rv
 
 Sensor.alerts = relationship('Alert',
     order_by=Alert.id,
@@ -85,6 +96,13 @@ class Notification(Base):
 
     alert = relationship('Alert', back_populates='notifications')
     temperature = relationship('Temperature', back_populates='notifications')
+
+    def as_dict(self):
+        rv = { c.name : getattr(self, c.name) for c in self.__table__.columns }
+        rv['alert'] = self.alert.as_dict()
+        rv['temperature'] = self.temperature.as_dict()
+        return rv
+
 
 Alert.notifications = relationship('Notification',
     order_by=Notification.timestamp,

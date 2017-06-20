@@ -11,41 +11,42 @@ sender_email = 'simonf256@googlemail.com'
 
 def notify(alert, temp, timestamp, trigger, level):
     print "Notify on alert '{}': {} {} {}".format(
-        alert.name,
+        alert.name.encode('utf-8'),
         temp.temperature,
         trigger,
         level)
 
-    if alert.notify_email:
-        if trigger == 'above':
-            direction_txt = 'überschritten'
-        elif trigger == 'below':
-            direction_txt = 'unterschritten'
-
-        msg = MIMEText("""
-=== Alarm {} ausgelöst ===
-
-Datum:      {}
-Temperatur: {:.1f} °C
-Grenzwert:  {:.1f} °C
-
-Der Grenzwert {:.1f} °C für den Alarm {} wurde {}.
-        """.format(alert.name,
-                   timestamp.strftime('%Y-%m-%d  %H:%M'),
-                   temp.temperature,
-                   level,
-                   level,
-                   alert.name,
-                   direction_txt))
-        msg['Subject'] = 'Alarm {}'.format(alert.name)
-        msg['From'] = sender_email
-        msg['To'] = alert.notify_email
-
-        s = smtplib.SMTP(smtp_server)
-        s.sendmail(sender_email, [alert.notify_email], msg.as_string())
-        s.quit()
-
-        print "Sent mail to {}".format(alert.notify_email)
+#    if alert.notify_email:
+#        if trigger == 'above':
+#            direction_txt = u'überschritten'
+#        elif trigger == 'below':
+#            direction_txt = u'unterschritten'
+#
+#        msg = MIMEText(u"""
+#=== Alarm {} ausgelöst ===
+#
+#Datum:      {}
+#Temperatur: {:.1f} °C
+#Grenzwert:  {:.1f} °C
+#
+#Der Grenzwert {:.1f} °C für den Alarm {} wurde {}.
+#        """.format('', #alert.name.encode('utf-8'),
+#                   timestamp.strftime('%Y-%m-%d  %H:%M'),
+#                   temp.temperature,
+#                   level,
+#                   level,
+#                   '', #alert.name.encode('utf-8'),
+#                   ''), _charset='utf-8')
+#                   #direction_txt.encode('utf-8')))
+#        msg['Subject'] = 'Alarm {}'.format(alert.name.encode('ascii', 'replace'))
+#        msg['From'] = sender_email
+#        msg['To'] = alert.notify_email
+#
+#        s = smtplib.SMTP(smtp_server)
+#        s.sendmail(sender_email, [alert.notify_email], msg.as_string())
+#        s.quit()
+#
+#        print "Sent mail to {}".format(alert.notify_email)
 
     session = db.Session()
     notice = db.Notification(alert_id=alert.id, temperature_id=temp.id)

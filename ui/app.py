@@ -331,8 +331,23 @@ def add_temperature():
 
 @app.route('/api/list-alerts')
 @valid_token
-def list_alters():
+def list_alerts():
     session = db.Session()
     alerts = session.query(db.Alert).all()
     return json.dumps([ a.as_dict() for a in alerts ])
+
+
+@app.route('/api/list-notifications')
+@valid_token
+def list_notifications():
+    session = db.Session()
+    notifications = session.query(db.Notification).all()
+
+    def json_serial_datetime(obj):
+        if isinstance(obj, datetime.datetime):
+            serial = obj.isoformat()
+            return serial
+        raise TypeError("Type {} not serializable.".format(type(obj)))
+
+    return json.dumps([ n.as_dict() for n in notifications ], default=json_serial_datetime)
 
