@@ -53,6 +53,12 @@ Der Grenzwert {:.1f} °C für den Alarm {} wurde {}.
     session.commit()
                    
 def find_crossings(alert):
+    # unclear why necessary
+    if not alert.below_trigger is None:
+        alert.below_trigger = float(alert.below_trigger)
+    if not alert.above_trigger is None:
+        alert.above_trigger = float(alert.above_trigger)
+
     def test(cur, prev, f):
         #print "f({}) = {} and not f({} = {}".format(
         #    cur, f(cur), prev, f(prev))
@@ -61,12 +67,12 @@ def find_crossings(alert):
     if alert.below_trigger:
         test_below = partial(test, f=lambda x: x.temperature < alert.below_trigger)
     else:
-        test_below = lambda _: False
+        test_below = lambda cur, prev: False
 
     if alert.above_trigger:
-        test_above = partial(test, f=lambda x: x.temperature > alert.above_trigger)
+        test_above = partial(test, f=lambda x: x.temperature > float(alert.above_trigger))
     else:
-        test_above = lambda _: False
+        test_above = lambda cur, prev: False
 
         
     cross_below = []
@@ -82,7 +88,7 @@ def find_crossings(alert):
 
     for temp in q:
         if not last_temp is None:
-            #print "Testing {}, {}".format(last_temp, temp)
+            print "Testing {}, {} -> above {}: {}".format(last_temp, temp, alert.above_trigger, test_above(temp, last_temp))
             if test_below(temp, last_temp):
                 cross_below.append(temp)
             if test_above(temp, last_temp):
@@ -100,6 +106,9 @@ def check_alerts():
         for alert in sensor.alerts:
             cross_below,cross_above = find_crossings(alert)
 
+            print "Alert: ", alert	
+            if alert.notifications:
+                print "  last previous notification: ", alert.notifications[-1]
             print "below: ", cross_below
             print "above: ", cross_above
 
