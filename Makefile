@@ -45,7 +45,7 @@ nginx-proxy:
 		-p 80:80 -p 443:443 \
 		-v /var/run/docker.sock:/tmp/docker.sock:ro \
 		-v /home/ubuntu/volumes/certs:/etc/nginx/certs:ro \
-		-v /etc/nginx/vhost.d \
+		-v /home/ubuntu/volumes/vhost.d:/etc/nginx/vhost.d \
 		-v /usr/share/nginx/html \
 		jwilder/nginx-proxy
 

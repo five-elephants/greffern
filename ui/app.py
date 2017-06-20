@@ -341,7 +341,10 @@ def list_alerts():
 @valid_token
 def list_notifications():
     session = db.Session()
-    notifications = session.query(db.Notification).all()
+    notifications = session.query(db.Notification)\
+        .order_by(db.Notification.timestamp.desc())\
+        .limit(10)\
+        .all()
 
     def json_serial_datetime(obj):
         if isinstance(obj, datetime.datetime):
