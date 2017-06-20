@@ -1,4 +1,4 @@
 #!/bin/sh
 
 /home/john/daq/pull_alerts.py
-/home/john/daq/check_alerts.py
+/home/john/daq/send_notifications.py

@@ -10,7 +10,7 @@ smtp_server = '172.17.0.1'
 sender_email = 'simonf256@googlemail.com'
 
 def notify(alert, temp, timestamp, trigger, level):
-    print "Notify on alert '{}': {} {} {}".format(
+    print u"Notify on alert '{}': {} {} {}".format(
         alert.name,
         temp.temperature,
         trigger,

@@ -99,6 +99,13 @@ class Notification(Base):
     alert = relationship('Alert', back_populates='notifications')
     temperature = relationship('Temperature', back_populates='notifications')
 
+
+    def from_dict(self, dct):
+        for k,v in dct.iteritems():
+            if not k in ['temperature', 'alert']:
+                #print 'setattr {}={}'.format(k, v)
+                setattr(self, k, v)
+
 Alert.notifications = relationship('Notification',
     order_by=Notification.timestamp,
     back_populates='alert',
