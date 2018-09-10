@@ -51,7 +51,7 @@ def temp_plot(labels, data):
         y_axis_label='Temperatur [Celsius]',
         plot_width=400,
         plot_height=400,
-        responsive=True,
+        sizing_mode='scale_width',
         active_drag=None,
         active_scroll=None,
         active_tap=None
@@ -87,7 +87,7 @@ def month_by_day(labels, data, date_range):
                y_axis_label='Temperatur [Celsius]',
                plot_width=400,
                plot_height=400,
-               responsive=True,
+               sizing_mode='scale_width',
                active_drag=None,
                active_scroll=None,
                active_tap=None)
@@ -150,7 +150,7 @@ def year_by_month(labels, data, date_range):
                y_axis_label='Temperatur [Celsius]',
                plot_width=400,
                plot_height=400,
-               responsive=True,
+               sizing_mode='scale_width',
                active_drag=None,
                active_scroll=None,
                active_tap=None)
